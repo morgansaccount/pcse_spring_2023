@@ -1,2 +1,2 @@
-# pcse_spring_2023
+# pcse_spring_2023 (SDS 374C)
 tacc username: moetuck
