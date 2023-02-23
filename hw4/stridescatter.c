@@ -84,11 +84,11 @@ int main(int argc,char **argv) {
   printf("\n");
   
   /*
-   * Correctness checking
+   * Check
    */
   for (int i=0; i<localsize; i++)
     if (mydata[i]%nprocs!=procno)
-      printf("[%d] received the element=%d, it should be %d\n",procno,mydata[i],i*nprocs+procno);
+      printf("[%d] received the element=%d, it should be %d\n", procno, mydata[i], i*nprocs+procno);
 
   if (procno==0)
     printf("Finished\n");
