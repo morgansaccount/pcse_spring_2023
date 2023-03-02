@@ -12,57 +12,64 @@
 #include <string.h>
 #include "mpi.h"
 
-void transpose(int* A, int n, int m, MPI_Comm, comm);
-
 int main(int argc,char **argv) {
+
+void transpose(double* A, int n, MPI_Comm comm);
 
   MPI_Init(&argc,&argv);
   MPI_Comm comm = MPI_COMM_WORLD;
 
-  int nprocs, procno;
-  MPI_Comm_rank(comm,&procno);
-  MPI_Comm_size(comm,&nprocs);
+  int rank, size;
+  MPI_Comm_rank(comm, &rank);
+  MPI_Comm_size(comm, &size);
 
-  //defining the size of the matrix and initializing
-  int n=2
-  int m=2
-    
-  int* A = (int*)malloc(n * m * sizeof(int));
-  
+  //transpose the matrix in place
+  if (size == 1) {
   for (int i=0, i<n, i++) {
-    for (int j=0, j<m, j++) {
-      A[i * m + j] = i * m + j;
+    for (int j=i+1, j<n, j++) {
+      double temp = A[i*n+j];
+      A[i*n+j] = A[j*n+i];
+      A[j*n+i] = temp;
+      }
     }
+  return;
   }
 
-  transpose(A, n, m, MPI_COMM_WORLD);
-    
-  if (procno == 0) {
-     printf("Transposed matrix:\n");
-        for (int i = 0; i < m; i++) {
-           for (int j = 0; j < n; j++) {
-              printf("%d ", A[j * m + i]);
-            }
-            printf("\n"); 
-        }
-  }
-   
-    MPI_Finalize();
-    return 0;
+//split the communicator into 4 parts
+int comnu = rank % 4;
+MPI_Comm subcomm;
+MPI_Comm_split(comm, comnu, rank, $subcomm);
+
+//divide the matric into 4 sub-matrices
+int submat = n / 2;
+double* A01 = A;
+double* A02 = A + submat;
+double* A03 = A + submat*n;
+double* A04 = A + submat*n + submat;
+
+//transpose each recursively
+transpose(submat, A01, subcomm);
+transpose(submat, A02, subcomm);
+transpose(submat, A03, subcomm);
+transpose(submat, A04, subcomm);
+
+//combine sub-matrices
+double* B = (double*)malloc(n*n * sizeof(double));
+for (int i = 0; i < submat; i++) {
+   for (int j = 0; j < submat; j++) {
+      B[i*n+j] = A01[i*n+j];
+      B[i*n+j+submat] = A02[i*n+j];
+      B[(i+submat)*n+j] = A03[i*n+j];
+      B[(i+submat)*n+j+submat] = A04[i*n+j];
+   }
 }
 
-void transpose(int* A, int n, int m, MPI_Comm, comm) {
-  
-  int nprocs, procno;
-  MPI_Comm_rank(comm,&procno);
-  MPI_Comm_size(comm,&nprocs);
-  
-  //incomplete at the moment
-  
-  
-  
-  
-  
-  
-  
-  
+//copy the result
+memcpy(A,B,n*n * sizeof(double));
+free(B);
+MPI_Comm_free)&subcomm);
+}
+
+
+
+
