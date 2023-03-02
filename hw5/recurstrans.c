@@ -67,7 +67,7 @@ for (int i = 0; i < submat; i++) {
 //copy the result
 memcpy(A,B,n*n * sizeof(double));
 free(B);
-MPI_Comm_free)&subcomm);
+MPI_Comm_free(&subcomm);
 }
 
 
