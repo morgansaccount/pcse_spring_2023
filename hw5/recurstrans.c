@@ -14,7 +14,7 @@
 
 int main(int argc,char **argv) {
 
-void transpose(double* A, int n, MPI_Comm comm);
+void transpose(double* A, int n, int i, int j, MPI_Comm comm);
 
   MPI_Init(&argc,&argv);
   MPI_Comm comm = MPI_COMM_WORLD;
