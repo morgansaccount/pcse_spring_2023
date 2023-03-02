@@ -40,7 +40,7 @@ int comnu = rank % 4;
 MPI_Comm subcomm;
 MPI_Comm_split(comm, comnu, rank, $subcomm);
 
-//divide the matric into 4 sub-matrices
+//divide the matrix into 4 sub-matrices
 int submat = n / 2;
 double* A01 = A;
 double* A02 = A + submat;
